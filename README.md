@@ -2,8 +2,9 @@
 
 This Chrome extension allows you to track your follower count on Threads, set milestone notifications, and visualize your follower growth.
 
-![Stats](link-to-stats-video)
-![Notification](link-to-notification-video)
+https://github.com/fernandops26/threads-follower-tracker/assets/11939055/729083ae-661c-4e77-8946-f50d9c9bb491
+
+https://github.com/fernandops26/threads-follower-tracker/assets/11939055/93eafaa3-145f-4062-b88d-86dd8763c51a
 
 ## Features
 
