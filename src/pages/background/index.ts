@@ -24,6 +24,11 @@ let data = {
   followerThreshold: 2,
 };
 
+type Milestone = {
+  id: number;
+  value: number;
+};
+
 // Listens for data requests from the popup script
 onMessage("getData", () => {
   return data;
@@ -31,41 +36,48 @@ onMessage("getData", () => {
 
 // Listens for setting followerThreshold
 onMessage("setFollowerThreshold", ({ data: received }) => {
-  data.followerThreshold = received.followerThreshold;
+  const { followerThreshold } = received as { followerThreshold: number };
+
+  data.followerThreshold = followerThreshold;
   // Save the whole data object
   saveData();
 });
 
 // Listens for changes from the popup script
 onMessage("setUsername", ({ data: received }) => {
-  console.log(received);
-  data.username = received.username;
+  const { username } = received as { username: string };
+
+  data.username = username;
   saveData();
   fetchData();
 });
 
 onMessage("setMilestones", ({ data: received }) => {
-  data.milestones = received.milestones;
+  const { milestones } = received as { milestones: Array<Milestone> };
+
+  data.milestones = milestones;
   saveData();
 });
 
 onMessage("addMilestone", ({ data: received }) => {
-  data.milestones.push(received.milestone);
+  const { milestone } = received as { milestone: Milestone };
+
+  data.milestones.push(milestone);
   saveData();
 });
 
 onMessage("removeMilestone", ({ data: received }) => {
-  data.milestones = data.milestones.filter(
-    (milestone) => milestone.id !== received.id
-  );
+  const { id } = received as { id: number };
+
+  data.milestones = data.milestones.filter((milestone) => milestone.id !== id);
   saveData();
 });
 
 onMessage("updateMilestone", ({ data: received }) => {
+  const { id, value } = received as { id: number; value: number };
+
   data.milestones = data.milestones.map((milestone) =>
-    milestone.id === received.id
-      ? { ...milestone, value: received.value }
-      : milestone
+    milestone.id === id ? { ...milestone, value } : milestone
   );
   saveData();
 });

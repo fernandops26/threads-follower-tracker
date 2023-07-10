@@ -20,7 +20,9 @@ const ConfigView = () => {
     getData();
 
     // Listening for changes from background script
-    onMessage("onDataChange", async ({ followers, data }) => {
+    onMessage("onDataChange", async ({ data }) => {
+      const { followers } = data as { followers: number };
+
       setFollowers(followers);
     });
   }, []);
@@ -28,11 +30,18 @@ const ConfigView = () => {
   const getData = async () => {
     const data = await sendMessage("getData", {}, "background");
 
-    const { username, milestones, followers, followerThreshold } = data;
+    const { username, milestones, followers, followerThreshold } = data as {
+      username: string;
+      milestones: Milestone[];
+      followers: number;
+      followerThreshold: number;
+    };
+
     setUsername(username);
     setMilestones(milestones);
     setFollowers(followers);
     setFollowerThreshold(followerThreshold);
+
     nextId = milestones.length + 1;
   };
 

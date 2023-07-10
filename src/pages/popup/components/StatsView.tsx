@@ -8,6 +8,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  ChartOptions,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import dayjs from "dayjs";
@@ -23,7 +24,12 @@ ChartJS.register(
   Legend
 );
 
-export const options = (period, data) => ({
+type FollowerHistoryItem = {
+  timestamp: number;
+  count: number;
+};
+
+export const options = (period, data): ChartOptions<"line"> => ({
   responsive: true,
   plugins: {
     legend: {
@@ -64,7 +70,11 @@ export default function StatsView() {
     getData();
 
     const onDataChangeListener = onMessage("onDataChange", ({ data }) => {
-      setFollowerData(filterData(data.followerHistory));
+      const { followerHistory } = data as {
+        followerHistory: FollowerHistoryItem[];
+      };
+
+      setFollowerData(filterData(followerHistory));
     });
 
     return () => {
@@ -74,10 +84,15 @@ export default function StatsView() {
 
   const getData = async () => {
     const data = await sendMessage("getData", {}, "background");
-    setFollowerData(filterData(data.followerHistory));
+
+    const { followerHistory } = data as {
+      followerHistory: FollowerHistoryItem[];
+    };
+
+    setFollowerData(filterData(followerHistory));
   };
 
-  const filterData = (data) => {
+  const filterData = (data: FollowerHistoryItem[]) => {
     const filteredData = data.filter(
       (entry) => entry.timestamp >= periods[period]
     );
@@ -92,13 +107,15 @@ export default function StatsView() {
         return acc;
       }, {});
 
-      dailyMaxData = Object.values(groupedByDay).map((entries) => {
-        const maxCountEntry = entries.reduce(
-          (max, entry) => (entry.count > max.count ? entry : max),
-          entries[0]
-        );
-        return maxCountEntry;
-      });
+      dailyMaxData = Object.values(groupedByDay).map(
+        (entries: Array<FollowerHistoryItem>) => {
+          const maxCountEntry = entries.reduce(
+            (max, entry) => (entry.count > max.count ? entry : max),
+            entries[0]
+          );
+          return maxCountEntry;
+        }
+      );
     } else {
       dailyMaxData = filteredData;
     }

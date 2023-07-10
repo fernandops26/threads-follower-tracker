@@ -13,14 +13,18 @@ export default function App() {
 
   useEffect(() => {
     const milestoneListener = onMessage("milestoneReached", ({ data }) => {
-      setFollowerCount(data.followers);
+      const { followers } = data as { followers: number };
+
+      setFollowerCount(followers);
       setTimeout(() => setFollowerCount(null), 8000);
     });
 
     const followerThresholdReachedListener = onMessage(
       "followerThresholdReached",
       ({ data }) => {
-        setLastFollowerCount(data.followers);
+        const { followers } = data as { followers: number };
+
+        setLastFollowerCount(followers);
         setTimeout(() => setLastFollowerCount(null), 8000);
       }
     );
